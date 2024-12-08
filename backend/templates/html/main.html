@@ -19,8 +19,77 @@
     <body>
 
 
-
+        <form action="post">
+            {% csrf_token %}
+            <input type="file" id="file"/>
+            <button type="button" id="upload">Upload</button>
+        </form>
         
+        <div class="content">
+    
+            <div class="container">
+              <h2 class="mb-5">Table #7</h2>
+        
+              <div class="table-responsive">
+        
+                <table class="table table-striped custom-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">
+                        <label class="control control--checkbox">
+                          <input type="checkbox" class="js-check-all">
+                          <div class="control__indicator"></div>
+                        </label>
+                      </th>
+                      <th scope="col">ID</th>
+                      <th scope="col">File Name</th>
+                      <th scope="col">Format</th>
+                      <th scope="col">Date</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for F in files_list %}
+                    
+                    
+                        <tr scope="row">
+                        <td>
+                            <label class="control control--checkbox">
+                            <input type="checkbox">
+                            <div class="control__indicator"></div>
+                            </label>
+                        </td>
+                        <td>
+                        {{ F.file_id }}
+                        </td>
+                        <td >
+                            <div class="d-flex align-items-center">
+                            <label class="custom-control ios-switch">
+                            <input type="checkbox" class="ios-switch-control-input" checked="">
+                            <span class="ios-switch-control-indicator"></span>
+                            </label>
+            
+                            <a href="#">{{ F.file_name }}</a>
+                            </div>
+                        </td>
+                        <td class="pl-0">
+                            {{ F.file_format }}
+                        </td>
+                        <td></td>
+                        <td>{{ F.file_date }}</td>
+                        <td><a href="#" class="more">Details</a></td>
+                        </tr>
+                    {% endfor %}
+                    
+                    
+                  </tbody>
+                </table>
+              </div>
+        
+        
+            </div>
+        
+          </div>
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="{% static 'js/script.js' %}"></script>
     </body>
