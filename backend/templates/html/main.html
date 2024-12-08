@@ -33,7 +33,7 @@
               <div class="table-responsive">
         
                 <table class="table table-striped custom-table">
-                  <thead>
+                  <thead >
                     <tr>
                       <th scope="col">
                         <label class="control control--checkbox">
@@ -50,34 +50,35 @@
                   </thead>
                   <tbody>
                     {% for F in files_list %}
-                    
-                    
                         <tr scope="row">
-                        <td>
-                            <label class="control control--checkbox">
-                            <input type="checkbox">
-                            <div class="control__indicator"></div>
-                            </label>
-                        </td>
-                        <td>
-                        {{ F.file_id }}
-                        </td>
-                        <td >
-                            <div class="d-flex align-items-center">
-                            <label class="custom-control ios-switch">
-                            <input type="checkbox" class="ios-switch-control-input" checked="">
-                            <span class="ios-switch-control-indicator"></span>
-                            </label>
-            
-                            <a href="#">{{ F.file_name }}</a>
-                            </div>
-                        </td>
-                        <td class="pl-0">
-                            {{ F.file_format }}
-                        </td>
-                        <td></td>
-                        <td>{{ F.file_date }}</td>
-                        <td><a href="#" class="more">Details</a></td>
+                            <td>
+                                <label class="control control--checkbox">
+                                <input type="checkbox">
+                                <div class="control__indicator"></div>
+                                </label>
+                            </td>
+
+                            <td>
+                                {{ F.file_id }}
+                            </td>
+
+                            <td >
+                                <div class="d-flex align-items-center">
+                                <label class="custom-control ios-switch">
+                                <input type="checkbox" class="ios-switch-control-input" checked="">
+                                <span class="ios-switch-control-indicator"></span>
+                                </label>
+                
+                                <a href="#">{{ F.file_name }}</a>
+                                </div>
+                            </td>
+
+                            <td class="pl-0">
+                                {{ F.file_format }}
+                            </td>
+                            <td>{{ F.file_date }}</td>
+                            
+                            <td><a href="#" class="more">Open</a></td>
                         </tr>
                     {% endfor %}
                     

@@ -15,10 +15,14 @@ from .models import Uploaded_File
 import pandas as pd
 #import numpy as np
 
+import os
+import random
+import string
 
     
 def MAIN(request):
-    return render(request,'html/main.html',{'msg':'test this',})
+    files_list= Uploaded_File.objects.all()
+    return render(request,'html/main.html',{'files_list':files_list,})
 
 
 def Upload_File(request):
@@ -28,7 +32,8 @@ def Upload_File(request):
         if upFile:
             file_name=upFile.name
             file_format= file_name.split('.')[-1]
-            fileId= ''
+            
+            fileId= ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
             Uploaded_File.objects.create(
                                         file_id=fileId,
                                         file_name=file_name,
@@ -37,5 +42,6 @@ def Upload_File(request):
         
             return JsonResponse({'status':'success',})
     return JsonResponse({'status':'error',})
+
 
 
