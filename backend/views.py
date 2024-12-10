@@ -38,7 +38,7 @@ def Upload_File(request):
                                         file_id=fileId,
                                         file_name=file_name,
                                          file_format=file_format,
-                                        file=upFile)
+                                        file=upFile) 
         
             return JsonResponse({'status':'success',})
     return JsonResponse({'status':'error',})
