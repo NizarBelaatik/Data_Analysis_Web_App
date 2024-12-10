@@ -24,13 +24,19 @@
             <input type="file" id="file"/>
             <button type="button" id="upload">Upload</button>
         </form>
+        <form action="post">
+          {% csrf_token %}
+          <button type="button" name="show_type" value='nonull'>No Null</button>
+          <button type="button" name="show_type" value='onlynull'>Only Null</button>
+        </form>
+
         
         <div class="content">
     
-            <div class="container">
+            <div class="container" >
               <h2 class="mb-5">Table #7</h2>
         
-              <div class="table-responsive">
+              <div class="table-responsive" id='table'>
         
                 <table class="table table-striped custom-table">
                   <thead >

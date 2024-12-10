@@ -45,15 +45,23 @@ def Upload_File(request):
 
 
 
-def preProc(request):
+def show_table_type(request):
     if request.method == 'POST':
-        df = pd.read_csv('media\uploads\Employee_Sample_Data.csv',encoding='latin1')
-        df_headers = df.columns.to_dict()
-        df_clean = df.loc[df.isnull().any(axis=1)]
+        table_type=request.POST.get('show_type')
+        data=[]
         
-        print(df_clean)
-        html=render_to_string({'header':df_headers,
-                            'data':df_clean})
+        df = pd.read_csv('media/uploads/dataset.csv',encoding='latin1')
+        df_headers = df.columns.tolist()
+        if table_type =='nonull':
+            df_clean = df.loc[~df.isnull().any(axis=1)]
+            data=df_clean.to_dict(orient='records')
+        elif table_type =='onlynull':
+            df_clean = df.loc[df.isnull().any(axis=1)]
+            data=df_clean.to_dict(orient='records')
+            
+        html=render_to_string('html/table1.html',{'header':df_headers,
+                            'data':data,
+                            'table_size':len(data)},request=request)
         return JsonResponse({'status':'success',
                             
                             'html':html})

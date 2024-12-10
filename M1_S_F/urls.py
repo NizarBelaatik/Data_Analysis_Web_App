@@ -20,7 +20,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from backend.views import MAIN , Upload_File
+from backend.views import MAIN , Upload_File,show_table_type
 
 
 urlpatterns = [
@@ -28,7 +28,8 @@ urlpatterns = [
     
     path('', MAIN),
     path('upload_file/',Upload_File,name="upload_file"),
-]
+    path('show_table_type/',show_table_type,name="show_table_type"),
+    ]
 
 
 if settings.DEBUG:
