@@ -38,11 +38,24 @@ def Upload_File(request):
                                         file_id=fileId,
                                         file_name=file_name,
                                          file_format=file_format,
-                                        file=upFile) 
+                                        file=upFile)
         
             return JsonResponse({'status':'success',})
     return JsonResponse({'status':'error',})
 
 
 
-
+def preProc(request):
+    if request.method == 'POST':
+        df = pd.read_csv('media\uploads\Employee_Sample_Data.csv',encoding='latin1')
+        df_headers = df.columns.to_dict()
+        df_clean = df.loc[df.isnull().any(axis=1)]
+        
+        print(df_clean)
+        html=render_to_string({'header':df_headers,
+                            'data':df_clean})
+        return JsonResponse({'status':'success',
+                            
+                            'html':html})
+        
+    return JsonResponse({'status':'error',})
