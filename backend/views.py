@@ -24,3 +24,25 @@ def MAIN(request):
     files_list= Uploaded_File.objects.all()
     return render(request,'html/main.html',{'files_list':files_list,})
 
+
+def Upload_File(request):
+    if request.method == "POST":
+        upFile = request.FILES.get('file')
+
+        if upFile:
+            file_name=upFile.name
+            file_format= file_name.split('.')[-1]
+            
+            fileId= ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            Uploaded_File.objects.create(
+                                        file_id=fileId,
+                                        file_name=file_name,
+                                         file_format=file_format,
+                                        file=upFile) 
+        
+            return JsonResponse({'status':'success',})
+    return JsonResponse({'status':'error',})
+
+
+
+
