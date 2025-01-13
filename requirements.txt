@@ -1,5 +1,8 @@
-numpy==2.2.0
-pandas==2.2.3
-Django==4.2.17
-beautifulsoup4==4.12.3
-django-bootstrap-v5==1.0.11
+Django>=4.2.17,<5.0
+pandas>=1.0.0
+matplotlib>=3.0
+seaborn>=0.11.0
+scikit-learn>=0.24.0
+statsmodels>=0.12.0
+numpy>=1.0
+asgiref>=3.0
