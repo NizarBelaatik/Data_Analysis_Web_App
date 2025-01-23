@@ -1,52 +1,52 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>File Upload and Management</title>
-    <meta name="description" content="Upload and manage your files easily.">
+    <title>Téléchargement et gestion des fichiers</title>
+    <meta name="description" content="Téléchargez et gérez vos fichiers facilement.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+    {% load bootstrap5 %}  <!-- Charge les styles Bootstrap -->
+    {% bootstrap_css %}  <!-- Inclut les fichiers CSS de Bootstrap -->
+    {% bootstrap_javascript %}  <!-- Inclut les fichiers JavaScript de Bootstrap -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">  <!-- Charge le fichier CSS personnalisé -->
 </head>
 <body>
 
     <div class="container mt-5">
-      <h2 class="mb-4">Upload Your File</h2>
-      <form action="post" class="mb-4">
-          {% csrf_token %}
-          <div class="input-group">
-              <input type="file" id="file" class="form-control" aria-label="Upload" required>
-              <button type="button" id="upload" class="btn btn-primary">Upload</button>
+      <h2 class="mb-4">Téléchargez votre fichier</h2>  <!-- Titre pour la section de téléchargement -->
+      <form action="post" class="mb-4">  <!-- Formulaire pour le téléchargement des fichiers -->
+          {% csrf_token %}  <!-- Jeton CSRF pour la sécurité -->
+          <div class="input-group">  <!-- Groupe d'entrée avec un champ de fichier et un bouton -->
+              <input type="file" id="file" class="form-control" aria-label="Télécharger" required>  <!-- Champ pour sélectionner un fichier -->
+              <button type="button" id="upload" class="btn btn-primary">Télécharger</button>  <!-- Bouton pour déclencher le téléchargement -->
           </div>
       </form>
 
-      <h2 class="mb-4">Uploaded Files</h2>
-      <div class="table-responsive">
-          <table id="file-table" class="table table-striped">
+      <h2 class="mb-4">Fichiers téléchargés</h2>  <!-- Titre pour la liste des fichiers -->
+      <div class="table-responsive">  <!-- Table responsive pour les fichiers -->
+          <table id="file-table" class="table table-striped">  <!-- Table pour afficher les fichiers -->
               <thead>
                   <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">File Name</th>
-                      <th scope="col">Format</th>
-                      <th scope="col">Date</th>
-                      <th scope="col" class="text-center">Actions</th>
+                      <th scope="col">ID</th>  <!-- Colonne pour l'ID du fichier -->
+                      <th scope="col">Nom du fichier</th>  <!-- Colonne pour le nom du fichier -->
+                      <th scope="col">Format</th>  <!-- Colonne pour le format du fichier -->
+                      <th scope="col">Date</th>  <!-- Colonne pour la date de téléchargement -->
+                      <th scope="col" class="text-center">Actions</th>  <!-- Colonne pour les actions -->
                   </tr>
               </thead>
               <tbody>
-                  {% for F in files_list %}
+                  {% for F in files_list %}  <!-- Boucle pour afficher les fichiers -->
                       <tr scope="row">
-                          <td>{{ F.file_id }}</td>
-                          <td><a href="#">{{ F.file_name }}</a></td>
-                          <td>{{ F.file_format }}</td>
-                          <td>{{ F.file_date }}</td>
+                          <td>{{ F.file_id }}</td>  <!-- Affiche l'ID du fichier -->
+                          <td><a href="#">{{ F.file_name }}</a></td>  <!-- Affiche le nom du fichier avec un lien -->
+                          <td>{{ F.file_format }}</td>  <!-- Affiche le format du fichier -->
+                          <td>{{ F.file_date }}</td>  <!-- Affiche la date du fichier -->
                           <td class="text-center">
-                              <a href="{% url 'DA' file_id=F.file_id %}" class="btn btn-info btn-sm">Open</a>
-                              <a href="{% url 'remove_file' file_id=F.file_id %}" class="btn btn-danger btn-sm">Remove</a>
+                              <a href="{% url 'DA' file_id=F.file_id %}" class="btn btn-info btn-sm">Ouvrir</a>  <!-- Bouton pour ouvrir le fichier -->
+                              <a href="{% url 'remove_file' file_id=F.file_id %}" class="btn btn-danger btn-sm">Supprimer</a>  <!-- Bouton pour supprimer le fichier -->
                           </td>
                       </tr>
                   {% endfor %}
@@ -55,7 +55,9 @@
       </div>
   </div>
 
+    <!-- Inclut jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Inclut un fichier JavaScript personnalisé -->
     <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>
