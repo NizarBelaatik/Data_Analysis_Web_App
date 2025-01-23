@@ -1,22 +1,21 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Utilitaire en ligne de commande de Django pour les tâches administratives."""
 import os
 import sys
 
-
 def main():
-    """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'M1_S_F.settings')
+    """Exécute les tâches administratives."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'M1_S_F.settings')  # Définit la configuration par défaut du projet Django
     try:
-        from django.core.management import execute_from_command_line
+        from django.core.management import execute_from_command_line  # Importe la commande d'exécution de Django
     except ImportError as exc:
+        # Exception levée si Django n'est pas correctement installé
         raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
+            "Impossible d'importer Django. Assurez-vous qu'il est installé et "
+            "qu'il est disponible dans votre variable d'environnement PYTHONPATH. "
+            "Avez-vous oublié d'activer un environnement virtuel ?"
         ) from exc
-    execute_from_command_line(sys.argv)
-
+    execute_from_command_line(sys.argv)  # Exécute la commande passée en ligne de commande
 
 if __name__ == '__main__':
-    main()
+    main()  # Point d'entrée du script
