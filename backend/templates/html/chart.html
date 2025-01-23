@@ -1,76 +1,70 @@
 {% load static %}
 {% load custom_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django Data Analysis</title>
+    <title>Analyse des Données Django</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
-    <script>var FileId = "{{FileId}}";</script>
-
+    {% load bootstrap5 %}  <!-- Charger les styles de Bootstrap -->
+    {% bootstrap_css %}  <!-- Inclure les fichiers CSS de Bootstrap -->
+    {% bootstrap_javascript %}  <!-- Inclure les fichiers JavaScript de Bootstrap -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">  <!-- Inclure le fichier CSS personnalisé -->
+    <script>var FileId = "{{FileId}}";</script>  <!-- Définir une variable JavaScript pour l'ID de fichier -->
 </head>
 <body>
     <div class="container">
-        <!-- Home Button -->
+        <!-- Bouton pour retourner à la page d'accueil -->
         <div class="button-group" style="margin-bottom: 20px;">
             <a href="{% url 'home' %}" class="btn btn-primary">
-                <i class="fas fa-home"></i> Home
+                <i class="fas fa-home"></i> Accueil
             </a>
         </div>
 
-        <h1>Data Analysis</h1>
+        <h1>Analyse des Données</h1>  <!-- Titre principal de la page -->
 
         <div class="button-group">
-            <button id="show_data_button"><i class="fas fa-th"></i> Show table</button>
-            <button id="load-sales-trend"><i class="fas fa-chart-line"></i> Load Sales Trend</button>
-            <button id="load-correlation-heatmap"><i class="fas fa-th"></i> Load Correlation Heatmap</button>
-            <button id="load-prediction-chart"><i class="fas fa-chart-bar"></i> Load Sales Prediction</button>
+            <button id="show_data_button"><i class="fas fa-th"></i> Afficher le tableau</button>  <!-- Bouton pour afficher les données -->
+            <button id="load-sales-trend"><i class="fas fa-chart-line"></i> Charger la tendance des ventes</button>  <!-- Bouton pour charger le graphique de tendance -->
+            <button id="load-correlation-heatmap"><i class="fas fa-th"></i> Charger la carte de corrélation</button>  <!-- Bouton pour charger la heatmap -->
+            <button id="load-prediction-chart"><i class="fas fa-chart-bar"></i> Charger les prévisions</button>  <!-- Bouton pour charger les prévisions -->
         </div>
         <div class="button-group">
             <div class="store-container">
-                <label for="store_id">Store ID:</label>
-                <input type="number" id="store_id" value="1">
-                <button onclick="fetchDataAndRenderChart()">Show Forecast</button>
+                <label for="store_id">ID du magasin :</label>  <!-- Étiquette pour l'ID du magasin -->
+                <input type="number" id="store_id" value="1">  <!-- Champ pour saisir l'ID du magasin -->
+                <button onclick="fetchDataAndRenderChart()">Afficher les prévisions</button>  <!-- Bouton pour afficher les prévisions -->
             </div>
         </div>
 
         <div id="loader" style="display:none;">
-            <div class="spinner"></div>
+            <div class="spinner"></div>  <!-- Animation de chargement -->
         </div>
-        <div class="chart-container" id="chart-container">
-
-            
+        <div class="chart-container" id="chart-container">  <!-- Conteneur pour les graphiques -->
         </div>
-        <div class="error" id="error-message"></div>
+        <div class="error" id="error-message"></div>  <!-- Affichage des messages d'erreur -->
         <div class="show_data" id="show_data_id">
             <div class="search-container">
-                <!-- Label for the dropdown -->
-                <label for="column-select">Select Column to Search:</label>
-            
-                <!-- Column Select Dropdown -->
+                <!-- Étiquette pour la recherche -->
+                <label for="column-select">Sélectionnez une colonne :</label>
+                <!-- Menu déroulant pour sélectionner une colonne -->
                 <select id="column-select">
-                    <option value="all">All</option>  <!-- Option to search across all columns -->
+                    <option value="all">Toutes</option>  <!-- Option pour toutes les colonnes -->
                     {% for H in header %}
-                        <option value="{{ forloop.counter0 }}">{{ H }}</option> <!-- Use loop.counter0 for zero-based index -->
+                        <option value="{{ forloop.counter0 }}">{{ H }}</option>  <!-- Option pour chaque colonne -->
                     {% endfor %}
                 </select>
-            
-                <!-- Search Input -->
-                <input type="text" id="search-input" placeholder="Search..." onkeyup="searchTable()" />
+                <!-- Champ de recherche -->
+                <input type="text" id="search-input" placeholder="Rechercher..." onkeyup="searchTable()" />
             </div>
-            
-            <!-- Table -->
+            <!-- Tableau des données -->
             <table id="stats-table" border="1">
                 <thead>
                     <tr>
                         {% for H in header %}
-                            <th scope="col">{{ H }}</th>
+                            <th scope="col">{{ H }}</th>  <!-- Affichage des en-têtes du tableau -->
                         {% endfor %}
                     </tr>
                 </thead>
@@ -78,27 +72,20 @@
                     {% for D in data %}
                         <tr scope="row">
                             {% for H in header %}
-                                <td>{{ D|get_item:H }}</td>
+                                <td>{{ D|get_item:H }}</td>  <!-- Affichage des valeurs pour chaque ligne et colonne -->
                             {% endfor %}
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        
-        
-        
-
-
-        
-        
-        
     </div>
 
-    <!-- Include jQuery -->
+    <!-- Inclure jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Include Chart.js -->
+    <!-- Inclure Chart.js pour les graphiques -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Inclure un fichier JavaScript personnalisé -->
     <script src="{% static 'js/script2.js' %}"></script>
 </body>
 </html>
