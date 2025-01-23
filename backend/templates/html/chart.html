@@ -138,17 +138,17 @@
         // Button event listeners
         $('#load-sales-trend').click(function() {
             //EDA
-            loadChart("{% url 'eda_view' %}", "sales-trend-chart", "error-message");
+            loadChart("{% url 'eda_view' file_id=FileId %}", "sales-trend-chart", "error-message");
             
         });
 
         $('#load-correlation-heatmap').click(function() {
-            loadChart("{% url 'correlation_view' %}", "correlation-heatmap", "error-message");
+            loadChart("{% url 'correlation_view' file_id=FileId %}", "correlation-heatmap", "error-message");
         });
 
         $('#load-prediction-chart').click(function() {
             $.ajax({
-                url: '/training_view/',  // Django URL for model training
+                url: "{% url 'training_view' file_id=FileId %}",  // Django URL for model training
                 method: 'GET',
                 success: function(response) {
                     // Display the model evaluation metrics
@@ -201,7 +201,7 @@
     
                 // Make an AJAX request to the backend to fetch the forecast data
                 $.ajax({
-                    url: '/TSF_ARIMA/',  // Django URL
+                    url: "{% url 'TSF_ARIMA' file_id=FileId %}",  // Django URL
                     type: 'GET',
                     data: {
                         store_id: store_id,

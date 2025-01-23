@@ -39,23 +39,35 @@ def MAIN(request):
     return render(request,'html/main.html',{'files_list':files_list,})
 
 
+def generate_unique_file_id():
+    while True:
+        file_id = ''.join(random.choices(
+            string.ascii_uppercase + string.digits, k=10))
+        if not Uploaded_File.objects.filter(file_id=file_id).exists():
+            return file_id
+
 def Upload_File(request):
     if request.method == "POST":
         upFile = request.FILES.get('file')
 
         if upFile:
-            file_name=upFile.name
-            file_format= file_name.split('.')[-1]
-            
-            fileId= ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            file_name = upFile.name
+            file_format = file_name.split('.')[-1]
+
+            # Generate a unique fileId
+            fileId = generate_unique_file_id()
+
+            # Create the Uploaded_File object
             Uploaded_File.objects.create(
-                                        file_id=fileId,
-                                        file_name=file_name,
-                                         file_format=file_format,
-                                        file=upFile)
-        
-            return JsonResponse({'status':'success',})
-    return JsonResponse({'status':'error',})
+                file_id=fileId,
+                file_name=file_name,
+                file_format=file_format,
+                file=upFile
+            )
+
+            return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'})
 
 
 
@@ -82,7 +94,8 @@ def show_table_type(request):
         
     return JsonResponse({'status':'error',})
 
-
+def getFilelink(request,file_id):
+    file  = Uploaded_File.objects.filter(file_id=file_id).first()
 
 def f1(request,file_name):
     table_type=request.POST.get('file_name')
@@ -101,26 +114,46 @@ def f1(request,file_name):
 
 
 
-def MAIN2(request):
-    files_list= Uploaded_File.objects.all()
-    return render(request,'html/chart.html',{'files_list':files_list,})
+def MAIN2(request,file_id):
+    f = load_data(file_id)
+  
+    return render(request,'html/chart.html',{'FileId':file_id,})
 
-    
-# Load Data Function
-def load_data():
-    file_path = "media/uploads/Walmart_Sales.csv"  # Adjust the path to your file
-    data = pd.read_csv(file_path)
-    data['Date'] = pd.to_datetime(data['Date'], dayfirst=True)
-    data['Year'] = data['Date'].dt.year
-    data['Month'] = data['Date'].dt.month
-    data['Week'] = data['Date'].dt.isocalendar().week
-    return data
 
-# EDA View
 
-async  def eda_view(request):
+
+
+# Define the synchronous load_data function
+def load_data(file_id):
     try:
-        data = load_data()  # Assume this loads your dataframe
+        uploaded_file = Uploaded_File.objects.get(file_id=file_id)
+        file_path = uploaded_file.file.path
+        data = pd.read_csv(file_path)
+        data['Date'] = pd.to_datetime(data['Date'], dayfirst=True)
+        data['Year'] = data['Date'].dt.year
+        data['Month'] = data['Date'].dt.month
+        data['Week'] = data['Date'].dt.isocalendar().week
+        return data
+    except Uploaded_File.DoesNotExist:
+        print("File not found.")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
+
+# Use sync_to_async to call the synchronous function
+async def load_data_sync(file_id):
+    return await sync_to_async(load_data)(file_id)
+
+
+async def eda_view(request, file_id):
+    data = await load_data_sync(file_id)  # Load your dataframe asynchronously
+
+    if data is None:
+        return JsonResponse({'error': 'Data could not be loaded.'}, status=400)
+
+    try:
+        # Create a line plot for Weekly Sales
         plt.figure(figsize=(12, 6))
         sns.lineplot(x=data['Date'], y=data['Weekly_Sales'], label="Sales Trend")
         plt.title("Sales Trend Over Time")
@@ -153,11 +186,9 @@ async  def eda_view(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-
-
 # Correlation View
-async def correlation_view(request):
-    data = load_data()
+async def correlation_view(request,file_id):
+    data = await load_data_sync(file_id)
     feature_columns = ['Holiday_Flag', 'Temperature']
     target_column = 'Weekly_Sales'
 
@@ -177,10 +208,10 @@ async def correlation_view(request):
     return JsonResponse({'chart': image_base64})
 
 # Training Model
-async def training_view(request):
+async def training_view(request,file_id):
     try:
         # Load data
-        data = load_data()
+        data = await load_data_sync(file_id)
 
         target_column = "Weekly_Sales"
         feature_columns = ["Holiday_Flag", "Temperature"]
@@ -219,17 +250,17 @@ async def training_view(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-async def TSF_ARIMA(request):
+async def TSF_ARIMA(request,file_id):
     # Define file path to your CSV data
     file_path = "media/uploads/Walmart_Sales.csv"  # Make sure this path is correct
 
     # Check if the file exists
-    if not os.path.exists(file_path):
-        return JsonResponse({"error": "Dataset file not found."}, status=404)
+    #if not os.path.exists(file_path):
+     #   return JsonResponse({"error": "Dataset file not found."}, status=404)
 
     try:
         # Load dataset
-        data = load_data()
+        data = await load_data_sync(file_id)
         target_column ="Weekly_Sales"# input("Enter the target column name (e.g., Weekly_Sales): ")
         date_column = "Date"
         

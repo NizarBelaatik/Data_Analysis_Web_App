@@ -32,15 +32,16 @@ urlpatterns = [
     path('f1/<str:file_name>',f1,name="f1"),
 
 
-    path('MAIN2/', MAIN2, name='MAIN2'),
-    path('eda_view/', eda_view, name='eda_view'),
-    path('correlation_view/', correlation_view, name='correlation_view'),
-    path('training_view/', training_view, name='training_view'),
+    path('MAIN2/<str:file_id>', MAIN2, name='MAIN2'),
+    
+    path('eda_view/<str:file_id>', eda_view, name='eda_view'),
+    path('correlation_view/<str:file_id>', correlation_view, name='correlation_view'),
+    path('training_view/<str:file_id>', training_view, name='training_view'),
+    path('TSF_ARIMA/<str:file_id>', TSF_ARIMA, name='TSF_ARIMA'),
+    
     #path('tsf_arima_view/', tsf_arima_view, name='tsf_arima_view'),
-    
-    
     #path('EDA_view2/', EDA_view2, name='EDA_view2'),
-    path('TSF_ARIMA/', TSF_ARIMA, name='TSF_ARIMA'),
+    
 
 
 
