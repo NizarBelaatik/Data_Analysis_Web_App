@@ -66,24 +66,27 @@
             </div>
             
             <!-- Table -->
-            <table id="stats-table" border="1">
-                <thead>
-                    <tr>
-                        {% for H in header %}
-                            <th scope="col">{{ H }}</th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for D in data %}
-                        <tr scope="row">
+            <div style="overflow:auto;max-height:900px;">
+                <!-- Table -->
+                <table id="stats-table" border="1">
+                    <thead>
+                        <tr>
                             {% for H in header %}
-                                <td>{{ D|get_item:H }}</td>
+                                <th scope="col">{{ H }}</th>
                             {% endfor %}
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for D in data %}
+                            <tr scope="row">
+                                {% for H in header %}
+                                    <td>{{ D|get_item:H }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         
