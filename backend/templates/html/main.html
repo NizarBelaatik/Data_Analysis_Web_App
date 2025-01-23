@@ -1,82 +1,61 @@
 {% load static %}
-
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>File Upload and Management</title>
+    <meta name="description" content="Upload and manage your files easily.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        {% load bootstrap5 %}
-        {% bootstrap_css %}
-        {% bootstrap_javascript %}
-        <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"> 
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+</head>
+<body>
 
+    <div class="container mt-5">
+      <h2 class="mb-4">Upload Your File</h2>
+      <form action="post" class="mb-4">
+          {% csrf_token %}
+          <div class="input-group">
+              <input type="file" id="file" class="form-control" aria-label="Upload" required>
+              <button type="button" id="upload" class="btn btn-primary">Upload</button>
+          </div>
+      </form>
 
-    </head>
-    <body>
-
-
-        <form action="post">
-            {% csrf_token %}
-            <input type="file" id="file"/>
-            <button type="button" id="upload">Upload</button>
-        </form>
-
-
-        
-        <div class="content">
-    
-            <div class="container" >
-              <h2 class="mb-5">Table #7</h2>
-        
-              <div class="table-responsive" id='table'>
-        
-                <table class="table table-striped custom-table">
-                  <thead>
-                    <tr>
+      <h2 class="mb-4">Uploaded Files</h2>
+      <div class="table-responsive">
+          <table id="file-table" class="table table-striped">
+              <thead>
+                  <tr>
                       <th scope="col">ID</th>
                       <th scope="col">File Name</th>
                       <th scope="col">Format</th>
                       <th scope="col">Date</th>
-                      <th scope="col"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for F in files_list %}
-                        <tr scope="row">
+                      <th scope="col" class="text-center">Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for F in files_list %}
+                      <tr scope="row">
+                          <td>{{ F.file_id }}</td>
+                          <td><a href="#">{{ F.file_name }}</a></td>
+                          <td>{{ F.file_format }}</td>
+                          <td>{{ F.file_date }}</td>
+                          <td class="text-center">
+                              <a href="{% url 'DA' file_id=F.file_id %}" class="btn btn-info btn-sm">Open</a>
+                              <a href="{% url 'remove_file' file_id=F.file_id %}" class="btn btn-danger btn-sm">Remove</a>
+                          </td>
+                      </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+  </div>
 
-
-                            <td>
-                                {{ F.file_id }}
-                            </td>
-
-                            <td >
-                                <a href="#">{{ F.file_name }}</a>
-                                </div>
-                            </td>
-
-                            <td class="pl-0">
-                                {{ F.file_format }}
-                            </td>
-                            <td>{{ F.file_date }}</td>
-                            
-                            <td><a href="{% url 'MAIN2' file_id=F.file_id %}" class="more">Open</a></td>
-                        </tr>
-                    {% endfor %}
-                    
-                    
-                  </tbody>
-                </table>
-              </div>
-        
-        
-            </div>
-        
-          </div>
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="{% static 'js/script.js' %}"></script>
-    </body>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
 </html>

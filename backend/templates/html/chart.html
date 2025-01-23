@@ -1,3 +1,5 @@
+{% load static %}
+{% load custom_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,255 +7,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Django Data Analysis</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        .chart-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-        .error {
-            color: red;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+    <script>var FileId = "{{FileId}}";</script>
 
+</head>
+<body>
+    <div class="container">
+        <!-- Home Button -->
+        <div class="button-group" style="margin-bottom: 20px;">
+            <a href="{% url 'home' %}" class="btn btn-primary">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+
+        <h1>Data Analysis</h1>
+
+        <div class="button-group">
+            <button id="show_data_button"><i class="fas fa-th"></i> Show table</button>
+            <button id="load-sales-trend"><i class="fas fa-chart-line"></i> Load Sales Trend</button>
+            <button id="load-correlation-heatmap"><i class="fas fa-th"></i> Load Correlation Heatmap</button>
+            <button id="load-prediction-chart"><i class="fas fa-chart-bar"></i> Load Sales Prediction</button>
+        </div>
+        <div class="button-group">
+            <div class="store-container">
+                <label for="store_id">Store ID:</label>
+                <input type="number" id="store_id" value="1">
+                <button onclick="fetchDataAndRenderChart()">Show Forecast</button>
+            </div>
+        </div>
+
+        <div id="loader" style="display:none;">
+            <div class="spinner"></div>
+        </div>
+        <div class="chart-container" id="chart-container">
+
+            
+        </div>
+        <div class="error" id="error-message"></div>
+        <div class="show_data" id="show_data_id">
+            <div class="search-container">
+                <!-- Label for the dropdown -->
+                <label for="column-select">Select Column to Search:</label>
+            
+                <!-- Column Select Dropdown -->
+                <select id="column-select">
+                    <option value="all">All</option>  <!-- Option to search across all columns -->
+                    {% for H in header %}
+                        <option value="{{ forloop.counter0 }}">{{ H }}</option> <!-- Use loop.counter0 for zero-based index -->
+                    {% endfor %}
+                </select>
+            
+                <!-- Search Input -->
+                <input type="text" id="search-input" placeholder="Search..." onkeyup="searchTable()" />
+            </div>
+            
+            <!-- Table -->
+            <table id="stats-table" border="1">
+                <thead>
+                    <tr>
+                        {% for H in header %}
+                            <th scope="col">{{ H }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for D in data %}
+                        <tr scope="row">
+                            {% for H in header %}
+                                <td>{{ D|get_item:H }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        
+        
+
+
+        
+        
+        
+    </div>
 
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-
-    <h1>Data Analysis with Django</h1>
-
-    <div>
-        <button id="load-sales-trend">Load Sales Trend Chart</button>
-        <button id="load-correlation-heatmap">Load Correlation Heatmap</button>
-        <button id="load-prediction-chart">Load Sales Prediction Chart</button>
-    </div>
-
-    <div class="chart-container">
-        <h2>Sales Trend</h2>
-        <div id="sales-trend-chart">
-            <!-- Sales trend chart will be loaded here -->
-        </div>
-        <div id="summary-stats" style="margin-top: 20px;">
-            
-
-        </div>
-
-        <h2>Correlation Heatmap</h2>
-        <div id="correlation-heatmap">
-            <!-- Correlation heatmap will be loaded here -->
-        </div>
-
-        <h2>Sales Prediction train model</h2>
-        <div id="model-results-chart">
-        </div>
-        <div id="model-results" style="margin-top: 20px;">
-
-            <p id="rmse"></p>
-            <p id="mae"></p>
-        </div>
-
-    </div>
-
-    <div class="error" id="error-message"></div>
-
-    <script>
-        // AJAX function to load chart from server
-        function loadChart(url, chartContainerId, errorMessageId) {
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(response) {
-                    
-                    var img = $('<img>').attr('src', 'data:image/png;base64,' + response.chart);
-                    $('#' + chartContainerId).html(img);
-                    $('#' + errorMessageId).text('');
-                    if(response.summary_stats){
-
-                    
-                        const summaryStats = response.summary_stats;
-                        let statsHtml ='';
-
-                        // Loop through each feature in the summary statistics
-                        for (let key in summaryStats) {
-                            // Start a new row for each feature
-                            statsHtml += `<tr><td><strong>${key}</strong></td>`;
-
-                            // Loop through the statistics for the feature (count, mean, etc.)
-                            let featureStats = summaryStats[key];
-                            statsHtml += `<td>${featureStats['count']}</td>
-                                        <td>${featureStats['mean']}</td>
-                                        <td>${featureStats['min']}</td>
-                                        <td>${featureStats['25%']}</td>
-                                        <td>${featureStats['50%']}</td>
-                                        <td>${featureStats['75%']}</td>
-                                        <td>${featureStats['max']}</td>
-                                        <td>${featureStats['std']}</td></tr>`;
-                        }
-
-                        // Insert the generated rows into the table body
-                        var htmlfinal=`<h3>Summary Statistics:</h3>
-                        <table id="stats-table" border="1">
-                                    <thead>
-                                        <tr>
-                                            <th>Feature</th>
-                                            <th>Count</th>
-                                            <th>Mean</th>
-                                            <th>Min</th>
-                                            <th>25%</th>
-                                            <th>50%</th>
-                                            <th>75%</th>
-                                            <th>Max</th>
-                                            <th>Std</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>${statsHtml}</tbody>
-                                </table>`
-                        $('#summary-stats ').html(htmlfinal);
-                    }
-                    
-                },
-                error: function(xhr, status, error) {
-                    $('#' + errorMessageId).text('An error occurred: ' + error);
-
-                }
-            });
-        }
-
-        // Button event listeners
-        $('#load-sales-trend').click(function() {
-            //EDA
-            loadChart("{% url 'eda_view' file_id=FileId %}", "sales-trend-chart", "error-message");
-            
-        });
-
-        $('#load-correlation-heatmap').click(function() {
-            loadChart("{% url 'correlation_view' file_id=FileId %}", "correlation-heatmap", "error-message");
-        });
-
-        $('#load-prediction-chart').click(function() {
-            $.ajax({
-                url: "{% url 'training_view' file_id=FileId %}",  // Django URL for model training
-                method: 'GET',
-                success: function(response) {
-                    // Display the model evaluation metrics
-                    $('#rmse').text(`RMSE: ${response.rmse}`);
-                    $('#mae').text(`MAE: ${response.mae}`);
-
-                    var img = $('<img>').attr('src', 'data:image/png;base64,' + response.chart);
-                    $('#model-results-chart' ).html(img);
-                    //$('#' + errorMessageId).text('');
-                },
-                error: function() {
-                    $('#model-results').html('<p>Error training the model.</p>');
-                }
-            });
-
-        });
-
-        
-    </script>
-
-    
-
-
-
-
-        <!-- Input fields for store_id, date_column, and target_column -->
-        <div>
-            <label for="store_id">Store ID:</label>
-            <input type="number" id="store_id" value="1">
-            <button onclick="fetchDataAndRenderChart()">Show Forecast</button>
-        </div>
-    
-        <div id="chart-container" style="width: 80%; height: 400px; margin-top: 20px;">
-            <!-- Canvas where the chart will be rendered -->
-            <canvas id="myChart"></canvas>
-        </div>
-        <div id="forecast-chart-container">
-        </div>
-        <div id="forecast-data" style="margin-top: 20px;">
-            <h3>12-Week Forecast:</h3>
-            <ul id="forecast-list"></ul>
-        </div>
-    
-        <script>
-            function fetchDataAndRenderChart() {
-                // Get the input values for store_id, date_column, and target_column
-                const store_id = $('#store_id').val();
-                const date_column = 'Date';  // You can update this if needed
-                const target_column = 'Sales';  // You can update this if needed
-    
-                // Make an AJAX request to the backend to fetch the forecast data
-                $.ajax({
-                    url: "{% url 'TSF_ARIMA' file_id=FileId %}",  // Django URL
-                    type: 'GET',
-                    data: {
-                        store_id: store_id,
-                        date_column: date_column,
-                        target_column: target_column
-                    },
-                    success: function(response) {
-                        // Get forecasted sales and dates from the response
-                        const forecast = response.forecast;
-                        const dates = response.dates;
-    
-                        // Render the forecast data below the chart
-                        $('#forecast-list').empty();
-                        forecast.forEach((value, index) => {
-                            $('#forecast-list').append(`<li>Week ${index + 1}: ${value}</li>`);
-                        });
-    
-                        // Render the chart using Chart.js
-                        const ctx = document.getElementById('myChart').getContext('2d');
-                        const chartData = {
-                            labels: dates,
-                            datasets: [{
-                                label: 'Forecasted Sales',
-                                data: forecast,
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 2,
-                                fill: false
-                            }]
-                        };
-    
-                        const chartOptions = {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        };
-    
-                        const myChart = new Chart(ctx, {
-                            type: 'line',
-                            data: chartData,
-                            options: chartOptions
-                        });
-    
-                        // Display the plot image (optional)
-                        $('#forecast-chart-container').append(`<img src="data:image/png;base64,${response.image}" alt="Sales Forecast Chart" />`);
-                    },
-                    error: function(error) {
-                        console.error('Error fetching data:', error);
-                    }
-                });
-            }
-        </script>
+    <script src="{% static 'js/script2.js' %}"></script>
 </body>
 </html>

@@ -20,20 +20,19 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from backend.views import MAIN , Upload_File,show_table_type,f1
-from backend.views import MAIN2,eda_view,correlation_view,training_view,TSF_ARIMA
+from backend.views import Home,MAIN ,show_table, Upload_File,remove_file
+from backend.views import MAIN,eda_view,correlation_view,training_view,TSF_ARIMA
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    path('', MAIN),
+
+    path('', Home, name='home'),
     path('upload_file/',Upload_File,name="upload_file"),
-    path('show_table_type/',show_table_type,name="show_table_type"),
-    
-    path('f1/<str:file_name>',f1,name="f1"),
+    path('remove_file/<str:file_id>/', remove_file, name='remove_file'),
 
 
-    path('MAIN2/<str:file_id>', MAIN2, name='MAIN2'),
-    
+
+    path('DA/<str:file_id>', MAIN, name='DA'),
     path('eda_view/<str:file_id>', eda_view, name='eda_view'),
     path('correlation_view/<str:file_id>', correlation_view, name='correlation_view'),
     path('training_view/<str:file_id>', training_view, name='training_view'),

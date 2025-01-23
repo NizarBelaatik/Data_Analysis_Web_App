@@ -1,12 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from django.http import JsonResponse
-from django.core import serializers
+from django.http import JsonResponse,Http404
 
 from .models import Uploaded_File
 
@@ -27,14 +23,14 @@ from sklearn.ensemble import RandomForestRegressor
 from statsmodels.tsa.arima.model import ARIMA
 import numpy as np
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.files import File
+
 from tempfile import NamedTemporaryFile
 from asgiref.sync import sync_to_async
 from io import BytesIO
 import base64
 
-def MAIN(request):
+
+def Home(request):
     files_list= Uploaded_File.objects.all()
     return render(request,'html/main.html',{'files_list':files_list,})
 
@@ -71,57 +67,61 @@ def Upload_File(request):
 
 
 
-def show_table_type(request):
-    if request.method == 'POST':
-        table_type=request.POST.get('show_type')
-        data=[]
-        
-        df = pd.read_csv('media/uploads/dataset.csv',encoding='latin1')
-        df_headers = df.columns.tolist()
-        if table_type =='nonull':
-            df_clean = df.loc[~df.isnull().any(axis=1)]
-            data=df_clean.to_dict(orient='records')
-        elif table_type =='onlynull':
-            df_clean = df.loc[df.isnull().any(axis=1)]
-            data=df_clean.to_dict(orient='records')
-            
-        html=render_to_string('html/table1.html',{'header':df_headers,
-                            'data':data,
-                            'table_size':len(data)},request=request)
-        return JsonResponse({'status':'success',
-                            
-                            'html':html})
-        
-    return JsonResponse({'status':'error',})
+def remove_file(request, file_id):
+    try:
+        # Try to fetch the file object with the given file_id
+        file_to_remove = Uploaded_File.objects.get(file_id=file_id)
 
-def getFilelink(request,file_id):
-    file  = Uploaded_File.objects.filter(file_id=file_id).first()
+        # Delete the file from the media directory if it exists
+        if file_to_remove.file:
+            file_to_remove.file.delete(save=False)  # This will delete the file from the file system
+        
+        # Delete the file record from the database
+        file_to_remove.delete()
 
-def f1(request,file_name):
-    table_type=request.POST.get('file_name')
+        # Redirect to the home page
+        return redirect('home')  # Redirect to the home page
+
+    except Uploaded_File.DoesNotExist:
+        # If the file does not exist, raise an error
+        raise Http404("File not found")
+
+
+
+
+def MAIN(request,file_id):
     data=[]
+    uploaded_file = Uploaded_File.objects.get(file_id=file_id)
+    file_path = uploaded_file.file.path
     
-    df = pd.read_csv('media/uploads/dataset.csv',encoding='latin1')
+    df = pd.read_csv(file_path,encoding='latin1')
     df_headers = df.columns.tolist()
     df_clean = df.loc[~df.isnull().any(axis=1)]
     data=df_clean.to_dict(orient='records')
-            
-    return render(request,'html/f1.html',{'header':df_headers,
-                            'data':data,
-                            'table_size':len(data)})
+
+        
+    return render(request,'html/chart.html',{'FileId':file_id,'header':df_headers,
+                            'data':data})
+
+
+
+def show_table(request, file_id):
+    try:
+        data = []
+        uploaded_file = Uploaded_File.objects.get(file_id=file_id)
+        file_path = uploaded_file.file.path
+        
+        # Load CSV and clean data
+        df = pd.read_csv(file_path, encoding='latin1')
+        df_headers = df.columns.tolist()
+        df_clean = df.dropna()  # Drop rows with NaN values
+        data = df_clean.to_dict(orient='records')
+
+        return JsonResponse({'header': df_headers, 'data': data})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
     
-
-
-
-
-def MAIN2(request,file_id):
-    f = load_data(file_id)
-  
-    return render(request,'html/chart.html',{'FileId':file_id,})
-
-
-
-
 
 # Define the synchronous load_data function
 def load_data(file_id):
