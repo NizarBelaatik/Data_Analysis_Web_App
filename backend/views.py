@@ -141,7 +141,7 @@ def load_data(file_id,target_column):
         data['Lagged_Sales'] = data[target_column].shift(1)
 
         # Rolling Statistics (e.g., rolling mean over 4 weeks)
-        data['Rolling_Mean_Sales'] = data[target_column].rolling(window=4).mean()
+        data['Rolling_Mean_S'] = data[target_column].rolling(window=4).mean()
 
         # Drop rows with missing values after feature engineering
         data = data.dropna()
@@ -171,10 +171,10 @@ async def eda_view(request, file_id):
     try:
         # Create a line plot for Weekly Sales
         plt.figure(figsize=(12, 6))
-        sns.lineplot(x=data[date_column], y=data[target_column], label="Sales Trend")
+        sns.lineplot(x=data[date_column], y=data[target_column], label=f"{target_column} Trend")
         plt.title(f"{target_column} Over Time")
         plt.xlabel("Date")
-        plt.ylabel("Weekly Sales")
+        plt.ylabel(target_column)
         plt.legend()
 
         # Summary statistics of the data
