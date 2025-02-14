@@ -14,6 +14,10 @@ h1 {
     color: #333;
 }
 
+.br_style{  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid gray;
+  width: 100%;}
 
 /* Home Table */
 /* Home Table */
@@ -198,6 +202,10 @@ th {
 /* ------------------------------
 -----------Data Analysis -----------
 --------------------------------*/
+
+
+
+
 /* Container for the search and dropdown elements */
   .search-container {
     display: flex;
@@ -215,7 +223,8 @@ th {
 }
 
 /* Dropdown select styling */
-.search-container select, .search-container input[type="text"] {
+.search-container select, .search-container input[type="text"],
+.button-group select, .button-group input[type="text"] {
     padding: 10px;
     font-size: 14px;
     border-radius: 5px;
@@ -225,25 +234,37 @@ th {
 }
 
 /* Focus effect for dropdown and input */
-.search-container select:focus, .search-container input[type="text"]:focus {
+.search-container select:focus, .search-container input[type="text"]:focus,
+.button-group select:focus, .button-group input[type="text"]:focus {
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 /* Button style */
-.search-container input[type="text"] {
+.search-container input[type="text"],
+.button-group input[type="text"] {
     width: 250px;
 }
 
 /* Add a small icon for the search input */
-.search-container input[type="text"]::placeholder {
+.search-container input[type="text"]::placeholder,
+.button-group input[type="text"]::placeholder {
     color: #888;
 }
 
 
 
 
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.checkbox-group label {
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
 
 /* Container for the Store ID and Forecast button */
 

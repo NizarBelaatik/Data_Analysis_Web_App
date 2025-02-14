@@ -1,10 +1,23 @@
 function loadChart(url, chartContainerId, errorMessageId) {
     // Show the loader before starting the request
     $('#loader').show();
-    
+    var store_id = $('#store_id').val();
+    var date_column = $('#date_column').val();
+    var target_column = $('#target_column').val();
+    var feature_columns = [];
+    $('input[name="feature_columns"]:checked').each(function() {
+        feature_columns.push($(this).val());
+    });
     $.ajax({
         url: url,
         method: 'GET',
+        data: {
+            store_id: store_id,
+            date_column: date_column,
+            target_column: target_column,
+            feature_columns:JSON.stringify(feature_columns)
+            
+        },
         success: function(response) {
             // Hide the loader after the data is successfully loaded
             $('#loader').hide();
@@ -67,9 +80,9 @@ function fetchDataAndRenderChart() {
     // Show the loader before starting the request
     $('#loader').show();
     $('#show_data_id').hide();
-    const store_id = $('#store_id').val();
-    const date_column = 'Date';
-    const target_column = 'Sales';
+    var store_id = $('#store_id').val();
+    var date_column = $('#date_column').val();
+    var target_column = $('#target_column').val();
 
     $('#chart-container' ).html(`
         <div id="chart-container" style="width: 80%; height: 400px; margin-top: 20px;">
@@ -83,6 +96,7 @@ function fetchDataAndRenderChart() {
         url: "/TSF_ARIMA/"+FileId,
         type: 'GET',
         data: {
+            
             store_id: store_id,
             date_column: date_column,
             target_column: target_column
@@ -140,7 +154,7 @@ $('#load-sales-trend').click(function() {
     $('#show_data_id').hide();
     var cContainteId = ""
     $('#chart-container' ).html(`
-                    <h2>Sales Trend</h2>
+                    <h2>`+ $("#target_column").val()+` Trend</h2>
             <div id="sales-trend-chart"></div>
             <div id="summary-stats"></div>
         `);
@@ -156,16 +170,32 @@ $('#load-correlation-heatmap').click(function() {
 
 $('#load-prediction-chart').click(function() {
     $('#show_data_id').hide();
-    $('#chart-container' ).html(`<h2>Sales Prediction Model</h2>
+    $('#chart-container' ).html(`<h2>`+ $("#target_column").val()+` Prediction Model</h2>
             <div id="model-results-chart"></div>
             <div id="model-results">
                 <p id="rmse"></p>
                 <p id="mae"></p>
             </div>`);
     $('#loader').show();
+    var store_id = $('#store_id').val();
+    var date_column = $('#date_column').val();
+    var target_column = $('#target_column').val();
+    var feature_columns = [];
+    $('input[name="feature_columns"]:checked').each(function() {
+        feature_columns.push($(this).val());
+    });
     $.ajax({
         url: "/training_view/" + FileId,
         method: 'GET',
+        timeout: 60000,
+        data: {
+            store_id: store_id,
+            date_column: date_column,
+            target_column: target_column,
+            feature_columns: JSON.stringify(feature_columns),
+            model_name: $('#model-select').val()  // Add model selection
+        },
+
         success: function(response) {
             $('#rmse').text(`RMSE: ${response.rmse}`);
             $('#mae').text(`MAE: ${response.mae}`);
@@ -240,3 +270,54 @@ function searchTable() {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Cache the elements
+    const dateColumnSelect = document.getElementById("date_column");
+    const targetColumnSelect = document.getElementById("target_column");
+    const featureCheckboxes = document.querySelectorAll(".feature-column");
+
+    // Function to update feature columns based on selections
+    function updateFeatureColumns() {
+        const dateColumnValue = dateColumnSelect.value;
+        const targetColumnValue = targetColumnSelect.value;
+
+        featureCheckboxes.forEach(function(checkbox) {
+            const featureValue = checkbox.value;
+
+            // If the feature is the same as date or target, disable the checkbox
+            if (featureValue === dateColumnValue || featureValue === targetColumnValue) {
+                checkbox.disabled = true;
+                checkbox.checked = false; // Optional: Uncheck the box if disabled
+            } else {
+                checkbox.disabled = false;
+            }
+        });
+    }
+
+    // Event listeners for when the user selects a date or target column
+    dateColumnSelect.addEventListener("change", updateFeatureColumns);
+    targetColumnSelect.addEventListener("change", updateFeatureColumns);
+
+    // Initial call to handle any pre-selected values
+    updateFeatureColumns();
+});

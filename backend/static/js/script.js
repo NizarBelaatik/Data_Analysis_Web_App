@@ -1,8 +1,5 @@
 $(document).ready(function () {
     $("#upload").click(function (event) {
-        console.log('1111');
-
-
 
         var formData = new FormData();
         var csrfToken = $("[name=csrfmiddlewaretoken]").val();

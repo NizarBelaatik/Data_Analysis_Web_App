@@ -23,15 +23,58 @@
                 <i class="fas fa-home"></i> Home
             </a>
         </div>
+        <div class="br_style"></div>
+        <h1>Select Columns</h1>
 
+        <div class="button-group">
+            <div class="search-container">
+                <label for="column-select">Select Date Column:</label>
+                <select id="date_column" name="date_column">
+                    {% for H in header %}
+                        <option value="{{ H }}" {% if H == "Date" or H == "date" %}Selected{% endif %}>{{ H }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="search-container">
+                <label for="column-select">Select Target Column:</label>
+                <select id="target_column" name="target_column">
+                    {% for H in header %}
+                        <option value="{{ H }}" {% if "Sales" in H  %}Selected{% endif %}>{{ H }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="search-container">
+                <label>Select Feature Columns:</label>
+                <div class="checkbox-group">
+                    {% for H in header %}
+                        <label style="font-size:20px;">
+                            <input type="checkbox" class="feature-column" name="feature_columns" value="{{ H }}"> {{ H }}
+                        </label><br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+
+
+        <div class="br_style"></div>
         <h1>Data Analysis</h1>
 
         <div class="button-group">
             <button id="show_data_button"><i class="fas fa-th"></i> Show table</button>
             <button id="load-sales-trend"><i class="fas fa-chart-line"></i> Load Sales Trend</button>
             <button id="load-correlation-heatmap"><i class="fas fa-th"></i> Load Correlation Heatmap</button>
+        </div>
+        <div class="button-group">
+            <select id="model-select">
+                <!--<option value="random_forest">Random Forest</option>-->
+                <option value="linear_regression">Linear Regression</option>
+                <option value="xgboost">XGBoost</option>
+            </select>
+            
             <button id="load-prediction-chart"><i class="fas fa-chart-bar"></i> Load Sales Prediction</button>
         </div>
+
         <div class="button-group">
             <div class="store-container">
                 <label for="store_id">Store ID:</label>
@@ -48,7 +91,8 @@
             
         </div>
         <div class="error" id="error-message"></div>
-        <div class="show_data" id="show_data_id">
+        <div class="br_style"></div>
+        <div class="show_data" id="show_data_id" >
             <div class="search-container">
                 <!-- Label for the dropdown -->
                 <label for="column-select">Select Column to Search:</label>
